@@ -68,19 +68,47 @@
   }
 
   // ---------- Home ----------
+  // Order the tiles pop out from the centre
+  const POP = { north: 1, east: 2, south: 3, west: 4, zenith: 5, nadir: 6 };
+
   function tile(d) {
     return `
-      <a class="tile tile-${d.id}" href="${d.file}">
+      <a class="tile tile-${d.id}" href="${d.file}" style="--i:${POP[d.id]}">
         <span class="tile-icon" aria-hidden="true">${d.icon}</span>
         <span class="tile-dir">${T(d.dir)}</span>
         <span class="tile-who">${T(d.who)}</span>
       </a>`;
   }
 
+  function petals() {
+    let out = "";
+    for (let i = 0; i < 10; i++) {
+      const left = (i * 37 + 7) % 100;
+      out += `<span style="left:${left}%;--d:${9 + (i % 4) * 2}s;--delay:${-i * 1.7}s;--s:${0.7 + (i % 3) * 0.25}">🪷</span>`;
+    }
+    return out;
+  }
+
+  // Fade sections in as they scroll into view
+  function setupReveal() {
+    const els = document.querySelectorAll(".reveal");
+    if (document.body.classList.contains("settled") || !("IntersectionObserver" in window)) {
+      els.forEach((e) => e.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach((e) => io.observe(e));
+  }
+
   function home() {
     const byId = Object.fromEntries(S.directions.map((d) => [d.id, d]));
     return `
       <section class="hero">
+        <div class="petals" aria-hidden="true">${petals()}</div>
         <div class="wrap">
           <p class="eyebrow">Dīgha Nikāya 31</p>
           <h1>${T(UI.siteTitle)}</h1>
@@ -102,15 +130,15 @@
         </div>
       </section>
 
-      <section class="wrap prose">
+      <section class="wrap prose reveal">
         <h2>${T(UI.storyTitle)}</h2>
         <p>${T(UI.story)}</p>
       </section>
 
-      <section class="wrap">
+      <section class="wrap reveal">
         <h2>${T(UI.verseTitle)}</h2>
         <blockquote class="verse">
-          <p class="pali">${S.verse.pali.map(esc).join("<br>")}</p>
+          <p class="pali">${S.verse.pali.map((l, i) => `<span class="line" style="--i:${i}">${esc(l)}</span>`).join("<br>")}</p>
           <p>${T(S.verse)}</p>
         </blockquote>
       </section>`;
@@ -139,6 +167,7 @@
 
     return `
       <section class="hero hero-dir dir-${d.id}">
+        <div class="petals" aria-hidden="true">${petals()}</div>
         <div class="wrap">
           <div class="chips">${chips}</div>
           <p class="eyebrow">${esc(d.pali)}</p>
@@ -178,6 +207,7 @@
 
     return `
       <section class="hero">
+        <div class="petals" aria-hidden="true">${petals()}</div>
         <div class="wrap">
           <p class="eyebrow">Sigālovāda Sutta</p>
           <h1>${T(UI.teachings)}</h1>
@@ -300,6 +330,7 @@
     }
     return `
       <section class="hero">
+        <div class="petals" aria-hidden="true">${petals()}</div>
         <div class="wrap">
           <p class="eyebrow">Sigālovāda Sutta</p>
           <h1>${T(UI.quiz)}</h1>
@@ -309,7 +340,11 @@
   }
 
   // ---------- Render ----------
+  let rendered = false;
+
   function render() {
+    if (rendered) document.body.classList.add("settled");
+    rendered = true;
     document.documentElement.lang = lang;
     document.getElementById("header").innerHTML = header();
     document.getElementById("footer").innerHTML = footer();
@@ -322,6 +357,8 @@
       const base = t(UI.siteTitle);
       document.title = page === "home" ? base : `${t(UI[page])} | ${base}`;
     }
+
+    if (page === "home") setupReveal();
 
     document.getElementById("langBtn").onclick = () => setLang(lang === "si" ? "en" : "si");
 

@@ -315,3 +315,76 @@ h3.real { color: var(--ok); }
   .card { padding: 18px; }
   .hero { padding: 40px 0 36px; }
 }
+
+/* ---------- Animations ---------- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pop { from { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scale(.3); } }
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--gold) 22%, transparent); }
+  50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--gold) 10%, transparent), 0 0 36px color-mix(in srgb, var(--gold) 45%, transparent); }
+}
+@keyframes drift {
+  0% { transform: translateY(0) rotate(0deg) scale(var(--s)); opacity: 0; }
+  12%, 85% { opacity: .5; }
+  100% { transform: translateY(-460px) rotate(200deg) scale(var(--s)); opacity: 0; }
+}
+
+/* Banner (all pages): text fades up, wheel turns, petals drift */
+.hero .wrap { position: relative; z-index: 1; }
+.hero .wrap > * { animation: fadeUp .9s ease backwards; }
+.hero .wrap > :nth-child(2) { animation-delay: .15s; }
+.hero .wrap > :nth-child(3) { animation-delay: .3s; }
+.hero::after { animation: spin 90s linear infinite; }
+.petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.petals span {
+  position: absolute; bottom: -40px; font-size: 1.4rem;
+  animation: drift var(--d) linear var(--delay) infinite;
+}
+
+/* Compass: "You" appears first, then the six directions spring out from it */
+.tile-north { --dy: 100%; }
+.tile-south { --dy: -100%; }
+.tile-east { --dx: -100%; }
+.tile-west { --dx: 100%; }
+.tile-zenith { --dy: 200%; }
+.tile-nadir { --dy: -200%; }
+.compass .tile {
+  animation: pop .7s cubic-bezier(.2, .8, .3, 1.25) backwards;
+  animation-delay: calc(.4s + var(--i) * .12s);
+}
+.you { position: relative; }
+.you::before {
+  content: ""; position: absolute; inset: 0; margin: auto;
+  width: 122px; height: 122px; border-radius: 50%;
+  border: 2px dashed color-mix(in srgb, var(--gold) 65%, transparent);
+  animation: spin 24s linear infinite;
+}
+.you span {
+  position: relative;
+  animation: pop .6s cubic-bezier(.2, .8, .3, 1.25) .2s backwards, glow 3.2s ease-in-out 1s infinite;
+}
+
+/* Story and verse slide in on scroll */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.in { opacity: 1; transform: none; }
+.reveal .line {
+  display: inline-block; opacity: 0; transform: translateX(-14px);
+  transition: opacity .6s ease, transform .6s ease;
+  transition-delay: calc(.35s + var(--i) * .3s);
+}
+.reveal.in .line { opacity: 1; transform: none; }
+
+/* After a language switch, skip the intro animations */
+.settled .hero .wrap > *, .settled .compass .tile { animation: none; }
+.settled .you span { animation: glow 3.2s ease-in-out infinite; }
+
+@media (max-width: 480px) {
+  .you::before { width: 86px; height: 86px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal, .reveal .line { opacity: 1; transform: none; }
+  .petals { display: none; }
+}
