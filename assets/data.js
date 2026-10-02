@@ -109,7 +109,8 @@ window.SUTTA = {
             { si: "හැකි තරම් ආහාර ගෙන මහත් වීම", en: "Eat as much as she can and grow plump" },
             { si: "සැමියා සමඟ චිත්‍රපට නැරඹීම", en: "Watch films with him" },
             { si: "සෑම දිනකම සවස සැමියාට දුරකථන ඇමතුමක් ගැනීම", en: "Call him every evening" },
-            { si: "අසනීප වූ විට සැමියාට දැන්වීම", en: "Tell him when she is unwell" }
+            { si: "අසනීප වූ විට සැමියාට දැන්වීම", en: "Tell him when she is unwell" },
+            { si: "වරින් වර සැමියාට “බබා” යැයි ඇමතීම", en: "Call him “baby” every now and then" }
           ]
         }
       ]
