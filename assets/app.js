@@ -58,8 +58,8 @@
           ${link("index.html", UI.home, page === "home")}
           ${link("teachings.html", UI.teachings, page === "teachings")}
           ${link("quiz.html", UI.quiz, page === "quiz")}
-          <button class="lang" type="button" id="langBtn">${T(UI.langBtn)}</button>
         </nav>
+        <button class="lang" type="button" id="langBtn">${T(UI.langBtn)}</button>
       </div>`;
   }
 
@@ -171,7 +171,7 @@
         <div class="wrap">
           <div class="chips">${chips}</div>
           <p class="eyebrow">${esc(d.pali)}</p>
-          <h1><span aria-hidden="true">${d.icon}</span> ${T(d.dir)} <span class="sep">·</span> ${T(d.who)}</h1>
+          <h1><span class="h-dir"><span aria-hidden="true">${d.icon}</span> ${T(d.dir)}</span> <span class="sep">·</span> <span class="h-who">${T(d.who)}</span></h1>
         </div>
       </section>
 
@@ -184,8 +184,8 @@
           ${d.sides.map(side).join('<div class="swap" aria-hidden="true">⇄</div>')}
         </div>
         <nav class="pager">
-          <a href="${prev.file}">← ${T(UI.prev)}: ${T(prev.dir)}</a>
-          <a href="${next.file}">${T(UI.next)}: ${T(next.dir)} →</a>
+          <a class="prev" href="${prev.file}"><small>← ${T(UI.prev)}</small>${prev.icon} ${T(prev.dir)}</a>
+          <a class="next" href="${next.file}"><small>${T(UI.next)} →</small>${next.icon} ${T(next.dir)}</a>
         </nav>
       </section>`;
   }
